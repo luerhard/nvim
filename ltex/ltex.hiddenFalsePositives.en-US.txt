@@ -1,0 +1,5 @@
+{"rule":"SPURIOUS_APOSTROPHE","sentence":"^\\QThe coders are five political science majors (three Master's, two Bachelor's).\\E$"}
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QOriginal sentence: Die Folgen Ihres Nichthandelns bezahlt die Gesellschaft, bezahlen die Steuerzahler, bezahlen die Bäuerinnen und Bauern.\\E$"}
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QAccordingly, the sentences illustrating people-centrism address either “the(se) people” directly (sentences 4 and 5), or representative parts like “the German taxpayer” in sentence 6.\\E$"}
+{"rule":"EN_UNPAIRED_BRACKETS","sentence":"^\\QNativism is defined as `an ideology, which holds that states should be inhabited exclusively by members of the native group (“the nation”) and that non-native elements (persons and ideas) are fundamentally threatening to the homogenous nation-state' \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q.\\E$"}
+{"rule":"AGREEMENT_SENT_START","sentence":"^\\QThe model marks sentences revolving around social class as left-wing and statements that seek to blame immigrants as right-wing.\\E$"}

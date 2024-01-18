@@ -1,6 +1,4 @@
---[[
-
-=====================================================================
+--[[ =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
 
@@ -44,6 +42,7 @@ P.S. You can delete this when you're done too. It's your config now :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
@@ -68,6 +67,9 @@ vim.opt.rtp:prepend(lazypath)
 --    as they will be available in your neovim runtime.
 require('lazy').setup({
   -- NOTE: First, some plugins that don't require any configuration
+
+  -- simple custom plugins
+  'rcarriga/nvim-notify',
 
   -- Git related plugins
   'tpope/vim-fugitive',
@@ -191,10 +193,10 @@ require('lazy').setup({
 
   {
     -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
+    'morhetz/gruvbox',
     priority = 1000,
     config = function()
-      vim.cmd.colorscheme 'onedark'
+      vim.cmd.colorscheme 'gruvbox'
     end,
   },
 
@@ -204,11 +206,16 @@ require('lazy').setup({
     -- See `:help lualine.txt`
     opts = {
       options = {
-        icons_enabled = false,
-        theme = 'onedark',
+        icons_enabled = true,
+        theme = 'gruvbox',
         component_separators = '|',
         section_separators = '',
       },
+      sections = {
+        lualine_a = {
+          'buffers',
+        },
+      }
     },
   },
 
@@ -266,7 +273,7 @@ require('lazy').setup({
   --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --
   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }, {})
 
 -- [[ Setting options ]]
@@ -321,8 +328,8 @@ vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = tr
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
+vim.keymap.set('n', ']d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
+vim.keymap.set('n', '[d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
 
@@ -427,8 +434,6 @@ vim.defer_fn(function()
 
     -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
     auto_install = false,
-    -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
-    auto_install = false,
     -- Install languages synchronously (only applied to `ensure_installed`)
     sync_install = false,
     -- List of parsers to ignore installing
@@ -466,6 +471,7 @@ vim.defer_fn(function()
         goto_next_start = {
           [']m'] = '@function.outer',
           [']]'] = '@class.outer',
+          [']a'] = '@parameter.inner',
         },
         goto_next_end = {
           [']M'] = '@function.outer',
@@ -474,6 +480,7 @@ vim.defer_fn(function()
         goto_previous_start = {
           ['[m'] = '@function.outer',
           ['[['] = '@class.outer',
+          ['[a'] = '@parameter.inner',
         },
         goto_previous_end = {
           ['[M'] = '@function.outer',
@@ -665,4 +672,72 @@ cmp.setup {
 }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
+-- vim: ts=2 sts=2 sw=2 etc
+
+-- My custom modifications
+vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
+
+vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
+vim.keymap.set("n", "<leader>Y", [["+Y]])
+vim.keymap.set("n", "<leader>p", [["+p]])
+function EscapePair()
+    local closers = {")", "]", "}", ">", "'", '"', "`", ","}
+    local line = vim.api.nvim_get_current_line()
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local after = line:sub(col + 1, -1)
+    local closer_col = #after + 1
+    local closer_i = nil
+    for i, closer in ipairs(closers) do
+        local cur_index, _ = after:find(closer)
+        if cur_index and (cur_index < closer_col) then
+            closer_col = cur_index
+            closer_i = i
+        end
+    end
+    if closer_i then
+        vim.api.nvim_win_set_cursor(0, {row, col + closer_col})
+    else
+        vim.api.nvim_win_set_cursor(0, {row, col + 1})
+    end
+end
+
+
+vim.api.nvim_set_keymap('i', '<C-l>', '<cmd>lua EscapePair()<CR>', { noremap = true, silent = true})
+vim.api.nvim_set_keymap("n", "<C-n>", "<cmd>lua vim.diagnostic.goto_next()<CR>", { noremap = true, silent = true})
+vim.api.nvim_set_keymap("n", "<leader>m", "<cmd>:Neotree toggle<CR>", { noremap = true, silent = true})
+
+vim.opt.spellfile= vim.fn.stdpath("config") .. "/spell/en.utf-8.add"
+vim.api.nvim_set_keymap("n", "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", { noremap = true, silent = true})
+
+vim.opt.nu = true
+vim.opt.relativenumber = true
+
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
+
+vim.opt.smartindent = true
+
+vim.opt.swapfile = false
+vim.opt.backup = false
+vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
+vim.opt.undofile = true
+
+vim.opt.incsearch = true
+
+vim.opt.scrolloff = 8
+vim.opt.isfname:append("@-@")
+
+vim.opt.updatetime = 50
+
+
+vim.o.langmap = "ö[,ä],Ö{,Ä}"
+vim.o.langremap = true
+
+vim.keymap.set({'n', 'v', 'o'}, 'ö', '[', {remap = true})
+vim.keymap.set({'n', 'v', 'o'}, 'öö', '[[', {remap = true})
+vim.keymap.set({'n', 'v', 'o'}, 'ä', ']', {remap = true})
+vim.keymap.set({'n', 'v', 'o'}, 'ää', ']]', {remap = true})
+vim.keymap.set({'n', 'v', 'o'}, 'Ö', '{', {remap = true})
+vim.keymap.set({'n', 'v', 'o'}, 'Ä', '}', {remap = true})
