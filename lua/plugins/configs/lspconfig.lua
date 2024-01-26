@@ -41,7 +41,6 @@ M.capabilities.textDocument.completion.completionItem = {
 require("lspconfig").lua_ls.setup {
   on_attach = M.on_attach,
   capabilities = M.capabilities,
-
   settings = {
     Lua = {
       diagnostics = {
